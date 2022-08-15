@@ -1,15 +1,40 @@
 from django.shortcuts import render
+from .models import Customer, Product, Order, OrderItem, ShippingAddress
 
-# Create your views here.
+
 def store(request):
-    context = {}
+    products = Product.objects.all()
+    
+    context = {'products': products}
     return render(request, 'store/store.html', context)
 
 def cart(request):
-    context = {}
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        items = order.orderitem_set.all()
+        
+        for item in items:
+            print('itemsitemstsmeit', item.product)
+    else:
+        items = []
+        order = {'get_cart_total': 0, 'get_cart_items': 0}
+        
+    context = {'order': order, 'items': items}
     return render(request, 'store/cart.html', context)
 
 
 def checkout(request):
-    context = {}
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        items = order.orderitem_set.all()
+        
+        for item in items:
+            print('itemsitemstsmeit', item.product)
+    else:
+        items = []
+        order = {'get_cart_total': 0, 'get_cart_items': 0}
+        
+    context = {'order': order, 'items': items}
     return render(request, 'store/checkout.html', context)
